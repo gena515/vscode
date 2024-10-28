@@ -15,8 +15,13 @@ import { createWaitMarkerFileSync } from '../../platform/environment/node/wait.j
 import { PipeCommand } from '../../workbench/api/node/extHostCLIServer.js';
 import { hasStdinWithoutTty, getStdinFilePath, readFromStdin } from '../../platform/environment/node/stdin.js';
 import { DeferredPromise } from '../../base/common/async.js';
+import { FileAccess } from '../../base/common/network.js';
 
 const __dirname = dirname(url.fileURLToPath(import.meta.url));
+
+console.log(join(__dirname, '../../../server-main.js'));
+console.log(FileAccess.asFileUri('server-main').fsPath);
+console.log(FileAccess.asFileUri('server-main.js').fsPath);
 
 /*
  * Implements a standalone CLI app that opens VS Code from a remote terminal.
@@ -241,7 +246,7 @@ export async function main(desc: ProductDescription, args: string[]): Promise<vo
 				cmdLine.push('--update-extensions');
 			}
 
-			const childProcess = cp.fork(join(__dirname, '../../../server-main.js'), cmdLine, { stdio: 'inherit' });
+			const childProcess = cp.fork(FileAccess.asFileUri('server-main').fsPath, cmdLine, { stdio: 'inherit' });
 			childProcess.on('error', err => console.log(err));
 			return;
 		}
